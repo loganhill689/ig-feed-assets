@@ -448,6 +448,7 @@
   /* ---------- prompter ---------- */
   var playing = false, rafId = null, lastTs = 0, wordEls = [], wordNorms = [], voiceIdx = 0;
   var voiceTargetTop = null;
+  var scrollPos = 0; /* float accumulator: iOS rounds scrollTop to whole pixels, so sub-pixel steps must accumulate here */
 
   function effFont() {
     var f = state.settings.font;
@@ -537,15 +538,19 @@
     if (!playing) return;
     var dt = lastTs ? (ts - lastTs) / 1000 : 0;
     lastTs = ts;
+    if (Math.abs(scroller.scrollTop - scrollPos) > 4) scrollPos = scroller.scrollTop;
+    var max = scroller.scrollHeight - scroller.clientHeight;
     if (state.settings.voice) {
       if (voiceTargetTop !== null) {
-        var d = voiceTargetTop - scroller.scrollTop;
-        if (Math.abs(d) < 0.5) { scroller.scrollTop = voiceTargetTop; voiceTargetTop = null; }
-        else scroller.scrollTop += d * Math.min(1, dt * 4.5);
+        var d = voiceTargetTop - scrollPos;
+        if (Math.abs(d) < 0.5) { scrollPos = voiceTargetTop; voiceTargetTop = null; }
+        else scrollPos += d * Math.min(1, dt * 4.5);
+        scroller.scrollTop = scrollPos;
       }
     } else {
-      scroller.scrollTop += pxPerSec() * dt;
-      if (scroller.scrollTop >= scroller.scrollHeight - scroller.clientHeight - 1) pause();
+      scrollPos = Math.min(scrollPos + pxPerSec() * dt, max);
+      scroller.scrollTop = scrollPos;
+      if (scrollPos >= max - 1) pause();
     }
     updateHudClock();
     rafId = requestAnimationFrame(tick);
@@ -573,6 +578,7 @@
         countdownEl.classList.remove("on");
         playing = true;
         lastTs = 0;
+        scrollPos = scroller.scrollTop;
         playBtn.innerHTML = "&#10073;&#10073; Pause";
         if (state.settings.voice) startRecognition();
         grabWakeLock();
@@ -594,8 +600,9 @@
 
   /* ---------- voice follow ---------- */
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  var rec = null, recWanted = false, micReady = false;
-  if (!SR) voiceBtn.title = "Voice-follow needs Chrome or Edge";
+  var rec = null, recWanted = false, micReady = false, startFails = 0;
+  var IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  if (!SR) voiceBtn.title = IS_IOS ? "On iPhone, voice-follow works in Safari only" : "Voice-follow needs Chrome, Edge, or Safari";
 
   function micErrorMessage(err) {
     var name = (err && (err.name || err.error)) || "";
@@ -665,11 +672,21 @@
     rec.onend = function () {
       rec = null;
       if (recWanted && state.settings.voice && prompter.classList.contains("on")) {
-        setTimeout(function () { if (recWanted && !rec) startRecognition(); }, 250);
+        setTimeout(function () { if (recWanted && !rec) startRecognition(); }, IS_IOS ? 450 : 250);
       } else prompter.classList.remove("listening");
     };
-    try { rec.start(); prompter.classList.add("listening"); }
-    catch (e) { rec = null; }
+    try { rec.start(); prompter.classList.add("listening"); startFails = 0; }
+    catch (e) {
+      rec = null;
+      startFails++;
+      if (startFails >= 3) {
+        recWanted = false;
+        prompter.classList.remove("listening");
+        toast("Voice-follow keeps getting cut off by this browser. Tap Voice to try again, or use auto-scroll.");
+      } else {
+        setTimeout(function () { if (recWanted && !rec) startRecognition(); }, 800);
+      }
+    }
   }
   function stopRecognition() {
     recWanted = false;
@@ -765,7 +782,12 @@
   playBtn.addEventListener("click", togglePlay);
 
   voiceBtn.addEventListener("click", function () {
-    if (!SR) { toast("Voice-follow needs Chrome or Edge. Auto-scroll still works everywhere."); return; }
+    if (!SR) {
+      toast(IS_IOS
+        ? "This app view has no speech engine, so voice-follow can't run here. Open RollCue's web link in Safari for voice. Auto-scroll works everywhere."
+        : "Voice-follow needs Chrome, Edge, or Safari. Auto-scroll still works everywhere.");
+      return;
+    }
     if (state.settings.voice) {
       state.settings.voice = false;
       saveState(state); applyTextSettings(); setVoiceIdx(voiceIdx);
