@@ -116,11 +116,11 @@
   .btn.roll:hover { background: #ef5b60; }
 
   /* ---------- Prompter view ---------- */
-  #prompter { position: fixed; inset: 0; background: #050607; display: none; }
+  #prompter { position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: #050607; display: none; }
   #prompter.on { display: block; }
 
   #scroller {
-    position: absolute; inset: 0;
+    position: absolute; top: 0; right: 0; bottom: 0; left: 0;
     overflow-y: scroll; scrollbar-width: none;
   }
   #scroller::-webkit-scrollbar { display: none; }
@@ -200,7 +200,7 @@
   #gear input[type=range] { width: 130px; }
 
   #countdown {
-    position: absolute; inset: 0; display: none;
+    position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: none;
     align-items: center; justify-content: center;
     background: rgba(5, 6, 7, .88);
     font-family: var(--ui); font-weight: 700; font-size: 22vmin; color: var(--ink);
@@ -217,6 +217,19 @@
   }
   #toast.on { opacity: 1; pointer-events: auto; }
   #toast a { color: var(--rec); font-weight: 600; }
+
+  /* Older Safari ignores gap in flex layouts; JS adds .nogap and these margins take over */
+  .nogap .brand > * + *, .nogap .hudGroup > * + *, .nogap .sideFoot > * + *,
+  .nogap .editHead > * + *, .nogap .editFoot > * + *, .nogap .sliderBox > * + *,
+  .nogap #hud > * + * { margin-left: 9px; }
+  .nogap #gear > * + * { margin-top: 14px; }
+  .nogap .scriptList > * + * { margin-top: 4px; }
+  .nogap .scriptItem > * + * { margin-top: 3px; }
+
+  /* Touch devices get bigger targets regardless of screen width (iPads) */
+  .touch .iconBtn { padding: 12px 14px; font-size: 14px; }
+  .touch .btn { padding: 12px 16px; }
+  .touch input[type=range] { height: 28px; }
 
   @media (max-width: 900px) {
     aside { width: 210px; min-width: 210px; }
@@ -307,8 +320,34 @@
 <div id="toast" role="status"></div>
 
 <script>
+window.onerror = function (msg, src, line) {
+  try {
+    var b = document.getElementById("errBanner");
+    if (!b) {
+      b = document.createElement("div");
+      b.id = "errBanner";
+      b.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:99;background:#7f1d1f;color:#fff;font:13px/1.5 -apple-system,Arial,sans-serif;padding:10px 14px;";
+      document.body.appendChild(b);
+    }
+    b.textContent = 'RollCue hit an error on this device. Tell Claude: "' + msg + '" (line ' + line + ") · " + navigator.userAgent;
+  } catch (e) {}
+};
 (function () {
   "use strict";
+
+  /* feature classes: old-Safari flex-gap fallback + touch-size targets */
+  try {
+    var probe = document.createElement("div");
+    probe.style.cssText = "display:flex;flex-direction:column;row-gap:1px;position:absolute;visibility:hidden";
+    probe.appendChild(document.createElement("div"));
+    probe.appendChild(document.createElement("div"));
+    document.body.appendChild(probe);
+    if (probe.scrollHeight !== 1) document.documentElement.className += " nogap";
+    document.body.removeChild(probe);
+  } catch (e) {}
+  try {
+    if (window.matchMedia && matchMedia("(pointer: coarse)").matches) document.documentElement.className += " touch";
+  } catch (e) {}
 
   /* ---------- storage (localStorage may be unavailable; fall back to memory) ---------- */
   var KEY = "rollcue_v1";
@@ -601,8 +640,9 @@
   /* ---------- voice follow ---------- */
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   var rec = null, recWanted = false, micReady = false, startFails = 0;
-  var IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-  if (!SR) voiceBtn.title = IS_IOS ? "On iPhone, voice-follow works in Safari only" : "Voice-follow needs Chrome, Edge, or Safari";
+  var IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+               (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (!SR) voiceBtn.title = "No speech engine in this browser";
 
   function micErrorMessage(err) {
     var name = (err && (err.name || err.error)) || "";
@@ -784,7 +824,7 @@
   voiceBtn.addEventListener("click", function () {
     if (!SR) {
       toast(IS_IOS
-        ? "This app view has no speech engine, so voice-follow can't run here. Open RollCue's web link in Safari for voice. Auto-scroll works everywhere."
+        ? "This browser has no speech engine. Voice-follow needs Safari on iOS or iPadOS 14.5 or newer, opened directly (not inside another app). Auto-scroll works everywhere."
         : "Voice-follow needs Chrome, Edge, or Safari. Auto-scroll still works everywhere.");
       return;
     }
