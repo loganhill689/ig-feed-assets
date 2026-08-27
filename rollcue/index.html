@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Archivo:wght@500;600;700&display=swap">
 <style>
-  /* RollCue — single committed dark theme (filming environment). All colors painted explicitly. */
+  /* RollCue: single committed dark theme (filming environment). All colors painted explicitly. */
   :root {
     --ground: #0b0d10;
     --panel: #14171c;
@@ -361,7 +361,6 @@ window.onerror = function (msg, src, line) {
     try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
   }
 
-  var SEED_TITLE = "Producer Origin Story (YouTube)";
   var SEED = [
     "Years ago, I paid around five thousand dollars to have my album produced, because I thought that was the missing piece. I thought if I could just get the right producer, the right studio, and the right sound, everything would finally click. But by the end of that process, I realized the real problem wasn't that I needed someone else to make my music. The real problem was that I didn't have a system for making it myself. In this video, I'm going to show you exactly how I went from a stuck artist to producing music for a Grammy award winning label.",
     "Maybe you've got songs written. Maybe voice memos are piling up on your phone. Maybe you've bought an interface, downloaded a DAW, watched a few tutorials, and still don't really know what to do next. So you start thinking, maybe I just need to pay someone. Maybe I need better gear. Maybe I'm just not technical enough. But most of the time, that's not the real issue. The issue is that no one has given you a simple path from idea to finished song.",
@@ -380,17 +379,68 @@ window.onerror = function (msg, src, line) {
     "And if you want to see me create a demo from scratch in under thirty minutes, click this video right here, and I'll walk you through exactly how to do it."
   ].join("\n\n");
 
+  var SEED_V2 = [
+    "Most artists don't get stuck because they're not creative. They get stuck because they open a blank project and immediately have no idea what to do next. So in this video, I'm going to show you how I turn a basic song idea into a finished demo from scratch. I'm going to create the tracks, build the arrangement, add the instruments, and show you the simple order I use so the process doesn't feel overwhelming. And if you don't want to build this whole setup from zero every time, I also have pre-made projects available that already give you the basic track layout and starting structure. I'll mention those later, but first I want to show you how the system works. I'll start with a completely blank project, create the tracks I need, record the parts, build the arrangement, and end with something I could actually share.",
+    "If you're an artist, you probably know this feeling. You have a song idea. Maybe it's a voice memo. Maybe it's a chorus. Maybe it's just a chord progression you keep playing over and over. You're excited about it, but then you sit down to actually record it and suddenly the whole thing turns into a technical problem. What tracks do I need? Do I start with guitar? Drums? Vocals? Bass? What if it sounds bad? What if I don't know what to add next? That's where most people stop. Not because the song is bad, but because the process is unclear.",
+    "So the way I think about demos is simple: don't start by trying to make the song perfect. Start by building a container for the song. That container gives you a place to put each idea as it comes. The system I use is: scratch the idea, build the foundation, add movement, create emotion, then clean it up enough to share.",
+    "First, I'm going to create the basic tracks I usually need for a demo. I'll make a scratch vocal track, a main instrument track, a drums or groove track, bass, texture or keys, a lead or hook track, background vocals, and a reference or notes track. Not every song needs all of these, but having them ready keeps me from stopping every few minutes to make setup decisions.",
+    "The first step is to scratch the idea. At this point, I'm not trying to get the final vocal or the perfect guitar take. I just want to get the song out of my head and into the session. I'm going to record a rough main instrument part and a scratch vocal. The first win is not sounding professional. The first win is having something real to build around.",
+    "Now that the basic idea is in the session, I'm going to give it some structure. I'll set the tempo, then map out the sections: intro, verse, chorus, second verse, chorus, bridge, final chorus. This is where the idea starts to feel less like a loop and more like an actual song. Next, I'll add a simple groove. This does not need to be the final drum sound. It just needs to give the song movement. The goal right now is momentum, not perfection.",
+    "Once the song has a basic groove, I like to add bass. Bass is one of the fastest ways to make a rough idea feel more complete. I'm not overthinking the part yet. I'm listening for one thing: does the song feel more grounded? If the bass supports the vocal and locks in with the groove, it's doing its job.",
+    "Now I'm going to add one texture. This could be keys, a pad, an ambient guitar, or anything that supports the feeling of the song. This is where I try not to think like a gear collector. I'm not asking, what plugin should I use? I'm asking, what does the song need emotionally? Does it need warmth? Space? Energy? Tension? Something intimate? The texture should support the emotion, not distract from the song.",
+    "Now I'm looking for the hook moment. This could be a vocal melody, a guitar line, a synth part, a harmony, or even just a sound that makes the chorus feel memorable. I already made a track for this earlier, so I don't have to stop and set anything up. I can just try ideas. The first idea might not be right, and that's fine. I just need something to react to. For a demo, recognizable beats perfection.",
+    "Now that the track has some shape, I can go back and sing the vocal with more intention. The scratch vocal did its job. It helped me build the song. Now I want a vocal that actually communicates the idea. For a demo, the vocal does not have to be flawless. But it does need to sell the song. After that, I'll add a simple background vocal or harmony in the biggest emotional moment, usually the chorus. A little lift here can make the demo feel way more finished.",
+    "At this point, I'm not doing a final mix. I'm doing a demo mix. The goal is to make the idea clear enough to share. I'll start with levels. Vocal up front. Main instrument supporting it. Drums and bass holding the energy. Then I'll do a little cleanup. Maybe some EQ if something feels muddy, some compression on the vocal, and a little reverb or delay to create space. This is where a lot of artists get stuck because they start mixing before the song is even finished. But for a demo, clarity matters more than perfection.",
+    "So now let's listen to where we ended up. [Play the strongest 8 to 15 seconds of the demo.] Is this a final record? No. But is it a finished demo that shows the song, the arrangement, the emotion, and the direction? Yes. And that's the goal.",
+    "If you watched this and thought, this makes sense, but I still don't want to create all these tracks from scratch every time, that's exactly why I make pre-made projects. They already have the basic structure set up for you: tracks labeled, a simple layout, and a starting point for building a demo. They are not meant to write the song for you. They are meant to remove the setup friction so you can get to the creative part faster. I'll link those below if you want to check them out.",
+    "So here's the process again. First, scratch the idea. Second, build the foundation. Third, add bass. Fourth, add texture. Fifth, create the hook moment. Sixth, replace the scratch vocal. Seventh, do a quick demo mix. If you follow that order, you're no longer just collecting voice memos. You're building songs.",
+    "You do not need a perfect studio to start finishing music. You need a process you can repeat. So whether you build your own project from scratch or use one of my pre-made projects, the goal is the same: stop starting from chaos and start from a system. If you want the pre-made projects, they're linked below. Now, if you want to understand where this way of thinking came from, watch this next video where I break down what I learned working around a Grammy-winning team, Elevation Worship, and I'll explain the biggest difference between unfinished songs and professional music. [Play the finished demo again as the video ends.]"
+  ].join("\n\n");
+
+  var SEED_V1 = [
+    "I used to work for Elevation Worship, and one of the biggest things I learned there had nothing to do with expensive gear, secret plugins, or having a giant studio. It was this: great songs are not built from complexity first. They're built from clarity first. And if you're an artist trying to finish your own music, this might be the thing that changes how you produce.",
+    "Elevation Worship is a Grammy-winning worship group. Their songs are sung by churches all over the world. They release live albums, tour, collaborate with major artists, and operate at a level most independent artists only see from the outside. But when you look past the size of it, there are some really simple lessons artists can take from how that world works. And I got to see some of that firsthand.",
+    "Before I started my own business teaching independent artists to produce their own music, I worked at Elevation Worship for about two and a half years. And I didn't get there because I had everything figured out. I got there after years of learning, internships, doing the boring jobs, trying to become useful, and slowly building the skills that prepared me for that opportunity. So this video is not me saying, here are secret industry hacks. This is me saying, here are the practical things I learned in that environment that I wish more independent artists understood.",
+    "Most artists think the gap between their music and professional music is gear. They think, if I had the right mic, the right plugins, the right producer, the right room, then my songs would finally sound real. And yes, gear matters. Production matters. Mixing matters. But in my experience, that's usually not the first problem. The first problem is that the song, the emotion, and the arrangement are not clear enough yet.",
+    "The biggest lesson I took from being around a group like Elevation is that production serves the moment. Everything is built around making the main idea land. The vocal, the arrangement, the dynamics, the instrumentation, the build, the space, all of it is there to support the emotional center of the song. So if you're producing your own music, the question is not, how do I make this sound bigger? The better question is, what is the moment I'm trying to create?",
+    "Lesson one: start with the emotional center. Before you add five guitar parts, ten vocal stacks, three synth layers, and a bunch of plugins, ask yourself: what is the listener supposed to feel? Is this song supposed to feel intimate? Hopeful? Heavy? Joyful? Desperate? Peaceful? Explosive? When you know the emotional center, production decisions get easier. You stop adding things just because you can, and you start adding things because they support the song. For an independent artist, this is huge because it keeps you from drowning in options.",
+    "Lesson two: build the arrangement like a story. One of the reasons worship songs can feel so powerful is that they often understand movement. They don't just throw everything in at the beginning. They know how to start small, introduce the idea, build tension, create lift, pull back, and then let the biggest moment actually feel earned. A lot of independent artists make the mistake of putting every idea into the first verse. But if everything is big, nothing is big. So when you're producing your demo, think like a storyteller. Where does the song begin? Where does it open up? Where does it need space? Where does it need lift? Where is the moment the listener should remember?",
+    "Lesson three: simplicity is not amateur. This is something I think a lot of artists need to hear. Simple does not mean lazy. Simple does not mean unfinished. Simple means clear. A vocal and one instrument can be powerful if the song is clear. A chorus can hit harder because you removed something from the verse. A hook can feel bigger because the production got out of the way. When you listen to great songs, the production might be huge, but the main idea is usually simple. That's what makes it repeatable, memorable, and singable.",
+    "Lesson four: systems create freedom. This is the part most artists don't want to hear because systems sound boring. But when you're working in a professional environment, you can't just wait around for inspiration every time. You need workflows. You need organization. You need repeatable starting points. You need a way to move from idea to demo without reinventing the whole process every time. That's why I'm so big on having a production system. Not because I want every song to sound the same, but because I want artists to stop wasting all their creative energy just trying to get started.",
+    "And this is where I think independent artists can learn a lot from a group like Elevation. You may not have the team, the budget, the room, or the platform. But you can still use the same principles. You can start with the emotional center. You can build your arrangement like a story. You can choose simplicity instead of clutter. And you can create a repeatable system that helps you finish songs instead of just collecting ideas.",
+    "What makes my perspective a little different is that I didn't start as someone who just wanted to engineer records. I started as an artist. I had songs I wanted to release, but I didn't know how to get them out of my head and into the world. So when I talk about production, I'm not just talking about sound. I'm talking about the process of helping an artist become less dependent, less overwhelmed, and more capable of finishing the music they actually care about.",
+    "So here's a simple filter you can use on your next song. Question one: what is the emotional center of this song? Question two: what is the one moment the listener should remember? Question three: what can I remove so that moment becomes clearer? Question four: what do I need to add to support the emotion, not just fill space? If you answer those four questions before you start throwing tracks into your session, your production decisions will get way easier.",
+    "This is why I care so much about helping artists build a production system. Because once you have a system, you stop asking, where do I even start? You start asking better questions, like, what does this song need? And that is the question that actually moves a song forward.",
+    "The secret is not that Grammy-winning artists have access to magic tools. The secret is that great production serves a clear song. So before you chase a bigger sound, make the song clearer. That's where the real progress starts.",
+    "If you want the exact process I use to build a demo from scratch, that video is coming next. It will walk you through exactly how to do it yourself. Subscribe, and I'll link it here as soon as it's live."
+  ].join("\n\n");
+
+  /* Built-in scripts: merged into the library once per device, so user edits and deletions stick. */
+  var BUILTINS = [
+    { sid: "origin-story", title: "Producer Origin Story (YouTube)", body: SEED },
+    { sid: "v2-demo-scratch", title: "V2: Demo From Scratch (System Showcase)", body: SEED_V2 },
+    { sid: "v1-elevation", title: "V1: What I Learned at Elevation Worship", body: SEED_V1 }
+  ];
+
   var state = loadState();
-  if (!state || !state.scripts || !state.scripts.length) {
-    state = {
-      scripts: [{ id: String(Date.now()), title: SEED_TITLE, body: SEED, updated: Date.now() }],
-      currentId: null,
-      settings: { speed: 5, font: 62, line: 1.45, margin: 78, flipH: false, flipV: false, voice: false }
-    };
-    state.currentId = state.scripts[0].id;
-    saveState(state);
+  if (!state || !state.scripts) {
+    state = { scripts: [], currentId: null, seeded: [] };
   }
   if (!state.settings) state.settings = { speed: 5, font: 62, line: 1.45, margin: 78, flipH: false, flipV: false, voice: false };
+  if (!state.seeded) state.seeded = state.scripts.length ? ["origin-story"] : [];
+  (function () {
+    var now = Date.now(), added = false;
+    for (var bi = 0; bi < BUILTINS.length; bi++) {
+      var b = BUILTINS[bi];
+      if (state.seeded.indexOf(b.sid) === -1) {
+        state.scripts.push({ id: "b-" + b.sid, title: b.title, body: b.body, updated: now + bi });
+        state.seeded.push(b.sid);
+        added = true;
+      }
+    }
+    if (!state.currentId && state.scripts.length) state.currentId = state.scripts[state.scripts.length - 1].id;
+    if (added) saveState(state);
+  })();
 
   /* ---------- element handles ---------- */
   function $(id) { return document.getElementById(id); }
