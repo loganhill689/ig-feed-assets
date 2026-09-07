@@ -25,6 +25,7 @@
     --read: "Atkinson Hyperlegible", Verdana, "Helvetica Neue", sans-serif;
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   html { -webkit-text-size-adjust: 100%; }
   html, body { height: 100%; }
   button, input[type=range] { touch-action: manipulation; }
@@ -199,6 +200,31 @@
   #gear .sliderBox { justify-content: space-between; }
   #gear input[type=range] { width: 130px; }
 
+  #picker {
+    position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 12;
+    background: rgba(5, 6, 7, .96);
+    display: flex; flex-direction: column;
+  }
+  .pickHead {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 18px calc(14px + env(safe-area-inset-top));
+    padding-top: calc(16px + env(safe-area-inset-top));
+    border-bottom: 1px solid var(--line);
+    font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-dim);
+  }
+  .pickList { flex: 1; overflow-y: auto; padding: 12px; -webkit-overflow-scrolling: touch; }
+  .pickItem {
+    display: block; width: 100%; text-align: left;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    color: var(--ink); padding: 16px 18px; margin: 0 0 10px;
+    font-family: var(--ui);
+  }
+  .pickItem .pt { display: block; font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+  .pickItem .pm { display: block; font-size: 13px; color: var(--ink-faint); }
+  .pickItem.on { border-color: var(--rec); }
+  .pickItem.on .pm::before { content: "Open now \2022 "; color: var(--rec); font-weight: 700; }
+  .pickItem:hover { border-color: var(--ink-faint); }
+
   #countdown {
     position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: none;
     align-items: center; justify-content: center;
@@ -253,6 +279,8 @@
     #hud { flex-wrap: wrap; gap: 8px; padding: 10px 12px calc(12px + env(safe-area-inset-bottom)); }
     .iconBtn { padding: 12px 13px; font-size: 14px; }
     #playBtn { min-width: 84px; }
+    #scriptsBtnName { max-width: 92px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pickItem { padding: 18px; }
     .sliderBox.hudSpeed { order: 4; width: 100%; }
     .sliderBox.hudSpeed input[type=range] { flex: 1; width: auto; }
     #clock { margin-left: 0; width: 100%; justify-content: space-between; order: 5; }
@@ -279,7 +307,7 @@
     </div>
     <textarea id="scriptInput" placeholder="Paste your script here. Blank lines make paragraphs." spellcheck="false"></textarea>
     <div class="editFoot">
-      <span class="hint">Saved on this device as you type &middot; In the prompter: Space to roll, V for voice-follow, M to mirror, F for fullscreen</span>
+      <span class="hint">Saved on this device as you type &middot; In the prompter: Space to roll, S to switch scripts, V for voice-follow, M to mirror, F for fullscreen</span>
       <button class="btn roll" id="startBtn">Start prompter</button>
     </div>
   </main>
@@ -292,6 +320,7 @@
   <div id="hud">
     <div class="hudGroup">
       <button class="iconBtn" id="exitBtn" title="Back to editor (Esc)">&#10005; Exit</button>
+      <button class="iconBtn" id="scriptsBtn" title="Switch script (S)">&#9776; <span id="scriptsBtnName">Scripts</span></button>
       <button class="iconBtn" id="restartBtn" title="Back to top (Home)">&#8676; Top</button>
       <button class="iconBtn" id="playBtn" title="Play / pause (Space)">&#9654; Roll</button>
     </div>
@@ -313,6 +342,13 @@
     <div class="sliderBox"><label for="lineRange">Line height</label><input type="range" id="lineRange" min="1.2" max="1.8" step="0.05" value="1.45"><output id="lineOut">1.45</output></div>
     <div class="sliderBox"><label for="marginRange">Width</label><input type="range" id="marginRange" min="45" max="96" step="1" value="78"><output id="marginOut">78%</output></div>
     <div class="sliderBox"><label for="flipVBox">Flip vertical</label><input type="checkbox" id="flipVBox" style="accent-color: var(--rec); width:auto"></div>
+  </div>
+  <div id="picker" hidden>
+    <div class="pickHead">
+      <span>Switch script</span>
+      <button class="iconBtn" id="pickClose">Close</button>
+    </div>
+    <div class="pickList" id="pickList"></div>
   </div>
   <div id="progress"></div>
 </div>
@@ -697,7 +733,11 @@ window.onerror = function (msg, src, line) {
         added = true;
       }
     }
-    if (!state.currentId && state.scripts.length) state.currentId = state.scripts[state.scripts.length - 1].id;
+    if (!state.currentId && state.scripts.length) {
+      var newest = state.scripts[0];
+      for (var ci = 1; ci < state.scripts.length; ci++) if (state.scripts[ci].updated > newest.updated) newest = state.scripts[ci];
+      state.currentId = newest.id;
+    }
     if (added) saveState(state);
   })();
 
@@ -708,6 +748,7 @@ window.onerror = function (msg, src, line) {
       copy = $("copy"), hud = $("hud"), playBtn = $("playBtn"), voiceBtn = $("voiceBtn"),
       mirrorBtn = $("mirrorBtn"), gearPanel = $("gear"), countdownEl = $("countdown"),
       progressEl = $("progress"), timeLeft = $("timeLeft"), toastEl = $("toast"),
+      picker = $("picker"), pickList = $("pickList"), scriptsBtnName = $("scriptsBtnName"),
       speedRange = $("speedRange"), speedOut = $("speedOut"),
       fontRange = $("fontRange"), fontOut = $("fontOut"),
       lineRange = $("lineRange"), lineOut = $("lineOut"),
@@ -765,7 +806,7 @@ window.onerror = function (msg, src, line) {
     s.updated = Date.now();
     updateStats();
     clearTimeout(saveDeb);
-    saveDeb = setTimeout(function () { saveState(state); renderList(); }, 400);
+    saveDeb = setTimeout(function () { saveState(state); renderList(); refreshScriptName(); }, 400);
   }
   titleInput.addEventListener("input", scheduleSave);
   scriptInput.addEventListener("input", scheduleSave);
@@ -1091,7 +1132,7 @@ window.onerror = function (msg, src, line) {
   var calmTimer = null;
   function armCalm() {
     clearTimeout(calmTimer);
-    calmTimer = setTimeout(function () { if (playing) prompter.classList.add("calm"); }, 2800);
+    calmTimer = setTimeout(function () { if (playing && picker.hidden) prompter.classList.add("calm"); }, 2800);
   }
   function wakeHud() {
     prompter.classList.remove("calm");
@@ -1101,6 +1142,52 @@ window.onerror = function (msg, src, line) {
   prompter.addEventListener("mousemove", wakeHud);
   prompter.addEventListener("touchstart", wakeHud, { passive: true });
 
+  /* ---------- script switcher (works from the prompter, one tap on phone) ---------- */
+  function orderedScripts() {
+    return state.scripts.slice().sort(function (a, b) { return b.updated - a.updated; });
+  }
+  function refreshScriptName() {
+    var s = current();
+    scriptsBtnName.textContent = s && s.title ? s.title : "Scripts";
+  }
+  function openPicker() {
+    pickList.innerHTML = "";
+    orderedScripts().forEach(function (s) {
+      var n = wordsOf(s.body).length;
+      var b = document.createElement("button");
+      b.className = "pickItem" + (s.id === state.currentId ? " on" : "");
+      b.innerHTML = "<span class='pt'></span><span class='pm'>" + n + " words &middot; ~" + fmtTime(n / 150 * 60) + " read</span>";
+      b.querySelector(".pt").textContent = s.title || "Untitled script";
+      b.addEventListener("click", function () { switchTo(s.id); });
+      pickList.appendChild(b);
+    });
+    picker.hidden = false;
+    wakeHud();
+  }
+  function closePicker() { picker.hidden = true; wakeHud(); }
+  function switchTo(id) {
+    pause();
+    state.currentId = id;
+    saveState(state);
+    picker.hidden = true;
+    buildCopy();
+    applyTextSettings();
+    scroller.scrollTop = 0;
+    scrollPos = 0;
+    voiceTargetTop = null;
+    setVoiceIdx(0);
+    refreshScriptName();
+    renderList();
+    renderEditor();
+    updateHudClock();
+    wakeHud();
+    toast("Loaded: " + (current().title || "Untitled script"));
+  }
+  $("scriptsBtn").addEventListener("click", function () {
+    picker.hidden ? openPicker() : closePicker();
+  });
+  $("pickClose").addEventListener("click", closePicker);
+
   /* ---------- enter / exit ---------- */
   function enterPrompter() {
     saveState(state);
@@ -1109,7 +1196,9 @@ window.onerror = function (msg, src, line) {
     buildCopy();
     applyTextSettings();
     scroller.scrollTop = 0;
+    scrollPos = 0;
     setVoiceIdx(0);
+    refreshScriptName();
     updateHudClock();
     wakeHud();
     if (state.settings.voice) {
@@ -1120,6 +1209,7 @@ window.onerror = function (msg, src, line) {
   function exitPrompter() {
     pause();
     stopRecognition();
+    picker.hidden = true;
     if (document.fullscreenElement) { try { document.exitFullscreen(); } catch (e) {} }
     gearPanel.classList.remove("open");
     prompter.classList.remove("on");
@@ -1187,11 +1277,13 @@ window.onerror = function (msg, src, line) {
       case "ArrowLeft": case "PageUp": ev.preventDefault(); scroller.scrollTop -= prompter.clientHeight * 0.25; updateHudClock(); break;
       case "ArrowRight": case "PageDown": ev.preventDefault(); scroller.scrollTop += prompter.clientHeight * 0.25; updateHudClock(); break;
       case "Home": ev.preventDefault(); scroller.scrollTop = 0; setVoiceIdx(0); voiceTargetTop = null; updateHudClock(); break;
+      case "s": case "S": picker.hidden ? openPicker() : closePicker(); break;
       case "m": case "M": mirrorBtn.click(); break;
       case "v": case "V": voiceBtn.click(); break;
       case "f": case "F": toggleFullscreen(); break;
       case "Escape":
-        if (gearPanel.classList.contains("open")) gearPanel.classList.remove("open");
+        if (!picker.hidden) closePicker();
+        else if (gearPanel.classList.contains("open")) gearPanel.classList.remove("open");
         else if (document.fullscreenElement) { try { document.exitFullscreen(); } catch (e) {} }
         else exitPrompter();
         break;
