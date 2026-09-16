@@ -525,21 +525,14 @@ window.onerror = function (msg, src, line) {
     "Step one. Scratch the idea.",
     "Before you record anything, you need your tempo.",
     "Pull up your session, turn the metronome on, and play the song with your chord chart in front of you.",
-    "In Logic you could totally hit the Notes button and paste your lyrics and chords right into the session, so you can pull them up any time while you produce.",
     "Now here's the part most people skip.",
-    "Play the whole song at that tempo.",
-    "Not the verse. The whole thing.",
+    "Play the whole song at that tempo to make sure it feels good.",
+    "Then we're going to build the foundation of the song using only MIDI.",
+    "This lets us stay flexible and make changes easy before locking in live instruments like guitar.",
     "I've had it happen where I practiced in the verse, felt great about the tempo, and then got to the big chorus at the end and it was way too fast.",
     "I had to retrack instruments, and that was a pain.",
     "So sing through your last chorus and make sure it still feels good there.",
     "Once it does, type the BPM into your session, set your time signature, and put in your key.",
-    "The song I'm working on right now is 75 BPM in 6/8, so it has more of a swing to it than a straight 4/4 song.",
-    "Then record your instrument and a scratch vocal all the way through.",
-    "This is a throwaway take.",
-    "I'm not trying to get the perfect guitar part or the final vocal.",
-    "I want the song out of my head and into the session.",
-    "The first win is not sounding professional.",
-    "The first win is having something real to build around.",
     "Step two. Add your section markers.",
     "Now that the song is in the session, mark every section from the top to the end.",
     "Intro. Verse one. Chorus. Instrumental break. Verse three. Chorus. Post chorus.",
@@ -724,12 +717,12 @@ window.onerror = function (msg, src, line) {
   /* Built-in scripts. Merged once per device by sid, so edits and deletions stick. */
   var BUILTINS = [
     { sid: "s1-elevation-v2", title: "1. What I Learned at Elevation Worship", body: SCRIPT_V1 },
-    { sid: "s2-demo-scratch-v4", title: "2. Demo From Scratch (System Showcase)", body: SCRIPT_V2 },
+    { sid: "s2-demo-scratch-v5", title: "2. Demo From Scratch (System Showcase)", body: SCRIPT_V2 },
     { sid: "s3-backstory-v2", title: "3. The $5,000 Album (Backstory Deep Dive)", body: SCRIPT_V3 }
   ];
 
   /* Retire the earlier draft built-ins; only removes untouched auto-added copies. */
-  var RETIRED = ["b-origin-story", "b-v2-demo-scratch", "b-v1-elevation", "b-s2-demo-scratch-v2", "b-s2-demo-scratch-v3"];
+  var RETIRED = ["b-origin-story", "b-v2-demo-scratch", "b-v1-elevation", "b-s2-demo-scratch-v2", "b-s2-demo-scratch-v3", "b-s2-demo-scratch-v4"];
 
   var state = loadState();
   if (!state || !state.scripts) {
